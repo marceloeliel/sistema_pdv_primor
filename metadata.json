@@ -1,0 +1,7 @@
+{
+  "name": "Primor OS - Enterprise Snack Delivery",
+  "description": "Sistema de gestão food service nível enterprise com PDV, KDS, Estoque Automatizado e Inteligência Financeira.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
