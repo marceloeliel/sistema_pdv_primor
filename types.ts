@@ -1,4 +1,5 @@
 
+
 export enum UserRole {
   ADMIN = 'ADMIN',
   CASHIER = 'CASHIER',
@@ -30,6 +31,20 @@ export interface Ingredient {
   costPrice: number;
 }
 
+export interface ComplementItem {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface ComplementGroup {
+  id: string;
+  name: string;
+  minChoices: number;
+  maxChoices: number;
+  items: ComplementItem[];
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -37,8 +52,12 @@ export interface Product {
   price: number;
   category: 'FRITOS' | 'ASSADOS' | 'COMBOS' | 'BEBIDAS' | 'SOBREMESAS';
   image: string;
-  recipe: { ingredientId: string; quantity: number }[]; // Ficha técnica
-  comboItems?: string[]; // Names of items included in the combo
+  recipe: { ingredientId: string; quantity: number }[];
+  complementGroupIds?: string[]; // IDs dos grupos vinculados
+  // Added optional properties to fix type errors in constants.tsx and AdminDashboard.tsx
+  comboItems?: string[];
+  stock?: number;
+  minStock?: number;
 }
 
 export interface OrderItem {
@@ -47,6 +66,7 @@ export interface OrderItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  selectedComplements?: { groupName: string; items: ComplementItem[] }[];
 }
 
 export interface Order {

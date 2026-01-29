@@ -42,7 +42,7 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
   const handleFinish = () => {
     if (Object.keys(currentOrder).length === 0) return;
     const order: Order = {
-      id: `POS-${Date.now()}`,
+      id: `PDV-${Date.now()}`,
       orderNumber: `${Math.floor(Math.random() * 900) + 100}`,
       customerName: customerName || 'Balcão',
       items: (Object.entries(currentOrder) as [string, number][]).map(([id, qty]) => {
@@ -67,12 +67,22 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
     onCreateOrder(order);
     setCurrentOrder({});
     setCustomerName('');
-    alert('Pedido enviado para a cozinha!');
+    alert('Pedido enviado para a cozinha com sucesso!');
+  };
+
+  const translatePayment = (method: PaymentMethod) => {
+    switch (method) {
+      case PaymentMethod.PIX: return 'PIX';
+      case PaymentMethod.CREDIT_CARD: return 'CARTÃO CRÉDITO';
+      case PaymentMethod.DEBIT_CARD: return 'CARTÃO DÉBITO';
+      case PaymentMethod.CASH: return 'DINHEIRO';
+      default: return method;
+    }
   };
 
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-48px)] bg-gray-100 overflow-hidden">
-      {/* Short-cuts and Grid */}
+      {/* Grid de Produtos */}
       <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
         <div className="flex flex-wrap gap-2 mb-6 sticky top-0 bg-gray-100 z-10 py-2">
           {categories.map(cat => (
@@ -94,7 +104,7 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
               className="bg-white p-3 sm:p-4 rounded-[1.5rem] sm:rounded-3xl shadow-sm hover:shadow-xl hover:ring-2 hover:ring-brand-yellow transition-all flex flex-col items-center text-center group active:scale-95"
             >
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden mb-2 sm:mb-3 border-4 border-gray-50 group-hover:border-brand-yellow/20">
-                <img src={p.image} className="w-full h-full object-cover" />
+                <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
               </div>
               <span className="text-[10px] sm:text-[11px] font-black uppercase text-brand-dark line-clamp-2 h-7 sm:h-8 leading-tight">{p.name}</span>
               <span className="text-brand-red font-black text-sm sm:text-base mt-1 sm:mt-2">R$ {p.price.toFixed(2)}</span>
@@ -106,7 +116,7 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
         </div>
       </div>
 
-      {/* Checkout Sidebar / Bottom Sheet */}
+      {/* Painel Lateral de Checkout */}
       <div className="w-full lg:w-[420px] bg-white border-t lg:border-t-0 lg:border-l shadow-2xl flex flex-col max-h-[60vh] lg:max-h-full">
         <div className="p-4 sm:p-6 flex-1 overflow-y-auto border-b hide-scrollbar">
           <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -147,14 +157,14 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
-              placeholder="Nome / Mesa"
+              placeholder="Nome do Cliente / Mesa"
               value={customerName}
               onChange={e => setCustomerName(e.target.value)}
               className="flex-1 bg-white border-gray-100 rounded-2xl py-3 px-5 text-sm font-bold shadow-sm"
             />
           </div>
 
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {[PaymentMethod.PIX, PaymentMethod.CREDIT_CARD, PaymentMethod.DEBIT_CARD, PaymentMethod.CASH].map(m => (
               <button
                 key={m}
@@ -164,14 +174,14 @@ const POS: React.FC<POSProps> = ({ products, onCreateOrder }) => {
                 <span className="material-symbols-outlined text-base">
                   {m === PaymentMethod.PIX ? 'qr_code' : m === PaymentMethod.CASH ? 'payments' : 'credit_card'}
                 </span>
-                {m.split('_')[0]}
+                {translatePayment(m)}
               </button>
             ))}
           </div>
 
           <div className="pt-4 flex justify-between items-center border-t border-dashed border-gray-300">
             <div>
-              <p className="text-[9px] sm:text-[10px] font-black uppercase text-gray-400">Total Geral</p>
+              <p className="text-[9px] sm:text-[10px] font-black uppercase text-gray-400">Total a Pagar</p>
               <h4 className="text-2xl sm:text-4xl font-black italic text-brand-dark tracking-tighter">R$ {total.toFixed(2)}</h4>
             </div>
             <button
